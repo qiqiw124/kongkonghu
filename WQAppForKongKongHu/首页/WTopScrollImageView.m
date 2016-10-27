@@ -308,9 +308,9 @@
        self.lineLabel.frame = CGRectMake(btn.frame.origin.x,self.frame.size.height - 3, btn.frame.size.width, 3);
     }];
     ImageModel * model = self.typeArray[btn.tag];
-    if(self.delegate && [self.delegate respondsToSelector:@selector(typeChangeContentUrl:)])
+    if(self.delegate && [self.delegate respondsToSelector:@selector(typeChangeContentUrl:index:)])
     {
-        [self.delegate typeChangeContentUrl:model.showStyleID];
+        [self.delegate typeChangeContentUrl:model.showStyleID index:btn.tag];
     }
 }
 -(void)dealloc

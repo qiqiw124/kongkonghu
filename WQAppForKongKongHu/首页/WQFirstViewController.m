@@ -15,6 +15,9 @@
 #import "ContentModel.h"//model
 #import "WcontentViewCell.h"
 #import "WwebViewCell.h"
+#import "ThrityViewCell.h"
+#import "ThirtyModel.h"
+#import "WNetRequest.h"
 @interface WQFirstViewController ()<WTopScrollImageDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 @property(nonatomic,strong)WTopScrollImageView * wscrollView;
 @property(nonatomic,strong)NSNumber * typeId;//类型ID
@@ -23,6 +26,8 @@
 @property(nonatomic,strong)WTopScrollImageView * typeVc;
 @property(nonatomic,strong)UIView * backView;
 @property(nonatomic,strong)UICollectionView * collectView;
+@property(nonatomic,assign)NSInteger indext;//判断是哪个类型
+@property(nonatomic,strong)UIButton * scrollTopBtn;//滚动到顶部
 
 @end
 
@@ -69,6 +74,7 @@
     [self.collectView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
     [_collectView registerNib:[UINib nibWithNibName:@"WcontentViewCell" bundle:nil] forCellWithReuseIdentifier:@"cell"];
     [_collectView registerNib:[UINib nibWithNibName:@"WwebViewCell" bundle:nil] forCellWithReuseIdentifier:@"webCell"];
+    [_collectView registerNib:[UINib nibWithNibName:@"ThrityViewCell" bundle:nil] forCellWithReuseIdentifier:@"thirtyCell"];
     self.backView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ViewWidth, 250)];
     
     
@@ -79,6 +85,23 @@
     self.typeVc = [[WTopScrollImageView alloc]initWithFrame:CGRectMake(0, 205, ViewWidth, 40) withColor:[UIColor whiteColor]];
     self.typeVc.delegate = self;
     [self.backView addSubview:self.typeVc];
+    
+    //滚动到顶部按钮
+    self.scrollTopBtn = [[UIButton alloc]initWithFrame:CGRectMake(ViewWidth - 60, ViewHight-100, 50, 50)];
+    [self.scrollTopBtn setImage:[UIImage imageNamed:@"btn_backtop"] forState:UIControlStateNormal];
+    [self.scrollTopBtn addTarget:self action:@selector(scrollToTopClick) forControlEvents:UIControlEventTouchUpInside];
+    self.scrollTopBtn.alpha = 0.5;
+    self.scrollTopBtn.hidden =YES;
+    [self.view addSubview:self.scrollTopBtn];
+}
+
+/**
+ 滚动到顶部
+ */
+-(void)scrollToTopClick
+{
+    
+    [self.collectView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 }
 //注册头视图
 -(UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -98,56 +121,79 @@
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *autocell;
-   
-    ContentModel * model = self.dataArray[indexPath.row];
-    if( ![model.type  isEqual: @"KKActivityEntity"])
-    {
-        WcontentViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
-        [cell.bigImageView sd_setImageWithURL:[NSURL URLWithString:model.cover]];
-        cell.scanLabel.text = [NSString stringWithFormat:@"%@",model.viewCount];
-        for(int i =0;i <model.products.count;i ++)
-        {
-            ContentModel * smallModel = model.products[i];
-            if(i==0)
-            {
-                [cell.firstImageView sd_setImageWithURL:[NSURL URLWithString:smallModel.littleCover]];
-                cell.firstmonyLabel.text = [NSString stringWithFormat:@"¥%@",smallModel.currentPrice];
-                cell.firstNameLabel.text = smallModel.littleName;
-            }
-            else if (i==1)
-            {
-                [cell.twoImageView sd_setImageWithURL:[NSURL URLWithString:smallModel.littleCover]];
-                cell.twomoneyLabel.text = [NSString stringWithFormat:@"¥%@",smallModel.currentPrice];
-                cell.twoNameLabel.text = smallModel.littleName;
-            }
-            else
-            {
-                [cell.threeImageView sd_setImageWithURL:[NSURL URLWithString:smallModel.littleCover]];
-                cell.threemoneyLabel.text = [NSString stringWithFormat:@"¥%@",smallModel.currentPrice];
-                cell.threeNameLabe.text = smallModel.littleName;
-            }
-        }
-        autocell = cell;
+   if(self.indext == 0)
+   {
+       ContentModel * model = self.dataArray[indexPath.row];
+       if( ![model.type  isEqual: @"KKActivityEntity"])
+       {
+           WcontentViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+           [cell.bigImageView sd_setImageWithURL:[NSURL URLWithString:model.cover]];
+           cell.scanLabel.text = [NSString stringWithFormat:@"%@",model.viewCount];
+           for(int i =0;i <model.products.count;i ++)
+           {
+               ContentModel * smallModel = model.products[i];
+               if(i==0)
+               {
+                   [cell.firstImageView sd_setImageWithURL:[NSURL URLWithString:smallModel.littleCover]];
+                   cell.firstmonyLabel.text = [NSString stringWithFormat:@"¥%@",smallModel.currentPrice];
+                   cell.firstNameLabel.text = smallModel.littleName;
+               }
+               else if (i==1)
+               {
+                   [cell.twoImageView sd_setImageWithURL:[NSURL URLWithString:smallModel.littleCover]];
+                   cell.twomoneyLabel.text = [NSString stringWithFormat:@"¥%@",smallModel.currentPrice];
+                   cell.twoNameLabel.text = smallModel.littleName;
+               }
+               else
+               {
+                   [cell.threeImageView sd_setImageWithURL:[NSURL URLWithString:smallModel.littleCover]];
+                   cell.threemoneyLabel.text = [NSString stringWithFormat:@"¥%@",smallModel.currentPrice];
+                   cell.threeNameLabe.text = smallModel.littleName;
+               }
+           }
+           autocell = cell;
+           
+       }
+       else
+       {
+           WwebViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"webCell" forIndexPath:indexPath];
+           [cell.backImageVIew sd_setImageWithURL:[NSURL URLWithString:model.webImageUrl]];
+           autocell = cell;
+       }
 
-    }
-    else
+   }
+    else if (self.indext == 2)
     {
-        WwebViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"webCell" forIndexPath:indexPath];
-        [cell.backImageVIew sd_setImageWithURL:[NSURL URLWithString:model.webImageUrl]];
+        ThirtyModel * model = self.dataArray[indexPath.item];
+        ThrityViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"thirtyCell" forIndexPath:indexPath];
+        [cell.coverImageView sd_setImageWithURL:[NSURL URLWithString:model.cover]];
+        cell.nameLabel.text = [NSString stringWithFormat:@"%@|%@",model.brand,model.category];
+        cell.priceLabel.text = [NSString stringWithFormat:@"¥%@",model.currentPrice];
+        cell.countLabel.text = [NSString stringWithFormat:@"%@",model.favorites];
         autocell = cell;
     }
-    
     return autocell;
 }
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    ContentModel * model = self.dataArray[indexPath.item];
-    if([model.type isEqualToString:@"KKActivityEntity"])
+    if(self.indext == 0)
     {
-        return CGSizeMake(ViewWidth, 200);
+        ContentModel * model = self.dataArray[indexPath.item];
+        if([model.type isEqualToString:@"KKActivityEntity"])
+        {
+            return CGSizeMake(ViewWidth, 200);
+        }
+        return CGSizeMake(ViewWidth, 370);
     }
-    return CGSizeMake(ViewWidth, 370);
+    else if(self.indext == 2)
+    {
+        return CGSizeMake((ViewWidth - 30)/2, (ViewWidth - 30)/2+60);
+    }
+    return CGSizeMake(0, 0);
+    
 }
+
+//kvo监测滑动的距离
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if(self.collectView.contentOffset.y >= 205)
@@ -162,25 +208,47 @@
         self.typeVc.frame = CGRectMake(0, 205, ViewWidth, 40);
         [self.backView addSubview:self.typeVc];
     }
+    if(self.collectView.contentOffset.y>=2*ViewHight)
+    {
+        self.scrollTopBtn.hidden = NO;
+    }
+    else
+    {
+        self.scrollTopBtn.hidden = YES;
+    }
+}
+-(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
+{
+    if(self.indext == 2)
+    {
+        return UIEdgeInsetsMake(10, 10, 10, 10);
+    }
+    return UIEdgeInsetsMake(10, 0, 10, 0);
 }
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    ContentModel * model = self.dataArray[indexPath.row];
-    if([model.type isEqualToString:@"KKActivityEntity"] && model.webUrl.length>0)
+    if(self.indext == 0)
     {
-        WQWebViewController * webC = [[WQWebViewController alloc]init];
-        webC.requestWebUrl = model.webUrl;
-        UINavigationController * navc = [[UINavigationController alloc]initWithRootViewController:webC];
-        [self presentViewController:navc animated:NO completion:nil];
+        ContentModel * model = self.dataArray[indexPath.row];
+        if([model.type isEqualToString:@"KKActivityEntity"] && model.webUrl.length>0)
+        {
+            WQWebViewController * webC = [[WQWebViewController alloc]init];
+            webC.requestWebUrl = model.webUrl;
+            UINavigationController * navc = [[UINavigationController alloc]initWithRootViewController:webC];
+            [self presentViewController:navc animated:NO completion:nil];
+            
 
+        }
     }
 }
 
 /**
  下载数据
  */
--(void)loadDataForType
+-(void)loadDataForTypeWithIndex:(NSInteger)indext
 {
+    if(indext == 0)
+    {
         [ContentModel loadDataWithPage:@(self.pageNumber) typeId:self.typeId viewWith:self.view arrayBlock:^(NSMutableArray *contentArray) {
             if(self.dataArray.count >0)
             {
@@ -189,11 +257,32 @@
             [self.dataArray addObjectsFromArray:contentArray];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectView reloadData];
-            
+                [self.collectView reloadData];
+                
             });
         }];
- 
+
+    }
+    else if (indext == 2)
+    {
+        [ThirtyModel loadDataWithPage:@(self.pageNumber) typeId:self.typeId viewWith:self.view arrayBlock:^(NSMutableArray *contentArray) {
+            if(self.dataArray.count >0)
+            {
+                [self.dataArray removeAllObjects];
+            }
+            [self.dataArray addObjectsFromArray:contentArray];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.collectView reloadData];
+                
+            });
+        }];
+    }
+    else
+    {
+        [WNetRequest showMbProgressText:@"看看其他的..." WithTime:1 WithView:self.view];
+    }
+    
     
 }
 
@@ -221,10 +310,11 @@
 
  @param typeId 类型id
  */
--(void)typeChangeContentUrl:(NSNumber *)typeId
+-(void)typeChangeContentUrl:(NSNumber *)typeId index:(NSInteger)selectIndex
 {
     self.typeId = typeId;
-    [self loadDataForType];
+    self.indext = selectIndex;
+    [self loadDataForTypeWithIndex:selectIndex];
     
 }
 -(void)dealloc

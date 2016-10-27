@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		745806F11DC1E2AA003EC7F3 /* ThirtyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 745806F01DC1E2AA003EC7F3 /* ThirtyModel.m */; };
+		745806F51DC1E4C9003EC7F3 /* ThrityViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 745806F31DC1E4C9003EC7F3 /* ThrityViewCell.m */; };
+		745806F61DC1E4C9003EC7F3 /* ThrityViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 745806F41DC1E4C9003EC7F3 /* ThrityViewCell.xib */; };
+		745806F81DC1E657003EC7F3 /* btn_backtop.png in Resources */ = {isa = PBXBuildFile; fileRef = 745806F71DC1E657003EC7F3 /* btn_backtop.png */; };
+		745806FA1DC1E68B003EC7F3 /* icon_like_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 745806F91DC1E68B003EC7F3 /* icon_like_normal.png */; };
 		7462DEB61DB9C46800942CFB /* MJRefreshAutoFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7462DE8C1DB9C46800942CFB /* MJRefreshAutoFooter.m */; };
 		7462DEB71DB9C46800942CFB /* MJRefreshBackFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7462DE8E1DB9C46800942CFB /* MJRefreshBackFooter.m */; };
 		7462DEB81DB9C46800942CFB /* MJRefreshComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 7462DE901DB9C46800942CFB /* MJRefreshComponent.m */; };
@@ -96,6 +101,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		745806EF1DC1E2AA003EC7F3 /* ThirtyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirtyModel.h; sourceTree = "<group>"; };
+		745806F01DC1E2AA003EC7F3 /* ThirtyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirtyModel.m; sourceTree = "<group>"; };
+		745806F21DC1E4C9003EC7F3 /* ThrityViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThrityViewCell.h; sourceTree = "<group>"; };
+		745806F31DC1E4C9003EC7F3 /* ThrityViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThrityViewCell.m; sourceTree = "<group>"; };
+		745806F41DC1E4C9003EC7F3 /* ThrityViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ThrityViewCell.xib; sourceTree = "<group>"; };
+		745806F71DC1E657003EC7F3 /* btn_backtop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = btn_backtop.png; sourceTree = "<group>"; };
+		745806F91DC1E68B003EC7F3 /* icon_like_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_like_normal.png; sourceTree = "<group>"; };
 		7462DE8B1DB9C46800942CFB /* MJRefreshAutoFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MJRefreshAutoFooter.h; sourceTree = "<group>"; };
 		7462DE8C1DB9C46800942CFB /* MJRefreshAutoFooter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MJRefreshAutoFooter.m; sourceTree = "<group>"; };
 		7462DE8D1DB9C46800942CFB /* MJRefreshBackFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MJRefreshBackFooter.h; sourceTree = "<group>"; };
@@ -359,6 +371,8 @@
 				74E654F11DB88DB700377E47 /* ImageModel.m */,
 				7462DEC91DB9F24100942CFB /* ContentModel.h */,
 				7462DECA1DB9F24100942CFB /* ContentModel.m */,
+				745806EF1DC1E2AA003EC7F3 /* ThirtyModel.h */,
+				745806F01DC1E2AA003EC7F3 /* ThirtyModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -404,6 +418,8 @@
 		74E6544B1DB8631900377E47 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				745806F91DC1E68B003EC7F3 /* icon_like_normal.png */,
+				745806F71DC1E657003EC7F3 /* btn_backtop.png */,
 				7462DED61DB9FBD900942CFB /* home_icon_scan_w.png */,
 				7462DED21DB9F9E800942CFB /* BackBtn.png */,
 				7462DE891DB9C46800942CFB /* MJRefresh */,
@@ -472,6 +488,9 @@
 				74F310DC1DC0B39300CEC152 /* WwebViewCell.h */,
 				74F310DD1DC0B39300CEC152 /* WwebViewCell.m */,
 				74F310DE1DC0B39300CEC152 /* WwebViewCell.xib */,
+				745806F21DC1E4C9003EC7F3 /* ThrityViewCell.h */,
+				745806F31DC1E4C9003EC7F3 /* ThrityViewCell.m */,
+				745806F41DC1E4C9003EC7F3 /* ThrityViewCell.xib */,
 			);
 			path = "首页";
 			sourceTree = "<group>";
@@ -681,7 +700,10 @@
 				74F310DB1DC0A47A00CEC152 /* WcontentViewCell.xib in Resources */,
 				74E6545B1DB8631900377E47 /* Assets.xcassets in Resources */,
 				7462DEC41DB9C46800942CFB /* MJRefresh.bundle in Resources */,
+				745806F81DC1E657003EC7F3 /* btn_backtop.png in Resources */,
 				7462DED31DB9F9E800942CFB /* BackBtn.png in Resources */,
+				745806F61DC1E4C9003EC7F3 /* ThrityViewCell.xib in Resources */,
+				745806FA1DC1E68B003EC7F3 /* icon_like_normal.png in Resources */,
 				74E654561DB8631900377E47 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -732,6 +754,7 @@
 				74E654DE1DB8683B00377E47 /* MBProgressHUD.m in Sources */,
 				7462DEBE1DB9C46800942CFB /* MJRefreshBackGifFooter.m in Sources */,
 				74E654E91DB8683B00377E47 /* UIImage+GIF.m in Sources */,
+				745806F11DC1E2AA003EC7F3 /* ThirtyModel.m in Sources */,
 				7462DEC71DB9C46800942CFB /* UIScrollView+MJRefresh.m in Sources */,
 				74E654EE1DB8683B00377E47 /* UIView+WebCacheOperation.m in Sources */,
 				74E6548B1DB864AE00377E47 /* WQActiveViewController.m in Sources */,
@@ -750,6 +773,7 @@
 				74E654DF1DB8683B00377E47 /* MKAnnotationView+WebCache.m in Sources */,
 				74E654DD1DB8683B00377E47 /* AFURLSessionManager.m in Sources */,
 				7462DEBD1DB9C46800942CFB /* MJRefreshAutoStateFooter.m in Sources */,
+				745806F51DC1E4C9003EC7F3 /* ThrityViewCell.m in Sources */,
 				74E654DC1DB8683B00377E47 /* AFURLResponseSerialization.m in Sources */,
 				74E654591DB8631900377E47 /* WQAppForKongKongHu.xcdatamodeld in Sources */,
 				74E654911DB864C800377E47 /* WQSendViewController.m in Sources */,

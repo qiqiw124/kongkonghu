@@ -25,7 +25,7 @@ typedef void (^nameBlcok)(NSString * str);
  @param typeId 传过去点击类型的id
  */
 @optional
--(void)typeChangeContentUrl:(NSNumber *)typeId;
+-(void)typeChangeContentUrl:(NSNumber *)typeId index:(NSInteger)selectIndex;
 
 @end
 @interface WTopScrollImageView : UIView
