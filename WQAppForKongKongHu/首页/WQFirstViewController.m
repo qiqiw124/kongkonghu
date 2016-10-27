@@ -87,7 +87,7 @@
     [self.backView addSubview:self.typeVc];
     
     //滚动到顶部按钮
-    self.scrollTopBtn = [[UIButton alloc]initWithFrame:CGRectMake(ViewWidth - 60, ViewHight-100, 50, 50)];
+    self.scrollTopBtn = [[UIButton alloc]initWithFrame:CGRectMake(ViewWidth - 60, ViewHight-100, 40, 40)];
     [self.scrollTopBtn setImage:[UIImage imageNamed:@"btn_backtop"] forState:UIControlStateNormal];
     [self.scrollTopBtn addTarget:self action:@selector(scrollToTopClick) forControlEvents:UIControlEventTouchUpInside];
     self.scrollTopBtn.alpha = 0.5;
