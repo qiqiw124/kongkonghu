@@ -18,6 +18,8 @@
 #import "ThrityViewCell.h"
 #import "ThirtyModel.h"
 #import "WNetRequest.h"
+#import "SpecialViewCell.h"
+#import "ImageViewController.h"
 @interface WQFirstViewController ()<WTopScrollImageDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 @property(nonatomic,strong)WTopScrollImageView * wscrollView;
 @property(nonatomic,strong)NSNumber * typeId;//类型ID
@@ -60,14 +62,19 @@
 }
 -(void)creatCollectView
 {
-    self.hidesBottomBarWhenPushed = YES;
     self.automaticallyAdjustsScrollViewInsets = NO;
     UICollectionViewFlowLayout * flowLayout = [[UICollectionViewFlowLayout alloc]init];
-    _collectView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, ViewWidth, ViewHight-106) collectionViewLayout:flowLayout];
-    flowLayout.headerReferenceSize = CGSizeMake(ViewWidth, 250);
+    _collectView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, ViewWidth, ViewHight-64) collectionViewLayout:flowLayout];
+    flowLayout.headerReferenceSize = CGSizeMake(ViewWidth, 280);
     _collectView.delegate = self;
     _collectView.dataSource = self;
     _collectView.backgroundColor = [UIColor colorWithRed:239/255.0 green:239/255.0 blue:244/255.0 alpha:1];
+    _collectView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [self reloadData];
+    }];
+    _collectView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        [self loadNextPageData];
+    }];
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     [_collectView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"head"];
     [self.view addSubview:_collectView];
@@ -75,14 +82,15 @@
     [_collectView registerNib:[UINib nibWithNibName:@"WcontentViewCell" bundle:nil] forCellWithReuseIdentifier:@"cell"];
     [_collectView registerNib:[UINib nibWithNibName:@"WwebViewCell" bundle:nil] forCellWithReuseIdentifier:@"webCell"];
     [_collectView registerNib:[UINib nibWithNibName:@"ThrityViewCell" bundle:nil] forCellWithReuseIdentifier:@"thirtyCell"];
-    self.backView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ViewWidth, 250)];
+    [_collectView registerNib:[UINib nibWithNibName:@"SpecialViewCell" bundle:nil] forCellWithReuseIdentifier:@"SpecialViewCell"];
+    self.backView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ViewWidth, 280)];
     
     
     //headView
-    self.wscrollView = [[WTopScrollImageView alloc]initWithFrame:CGRectMake(0, 0, ViewWidth, 200)];
+    self.wscrollView = [[WTopScrollImageView alloc]initWithFrame:CGRectMake(0, 0, ViewWidth, 250)];
     self.wscrollView.delegate = self;
     [self.backView addSubview:self.wscrollView];
-    self.typeVc = [[WTopScrollImageView alloc]initWithFrame:CGRectMake(0, 205, ViewWidth, 40) withColor:[UIColor whiteColor]];
+    self.typeVc = [[WTopScrollImageView alloc]initWithFrame:CGRectMake(0, 255, ViewWidth, 40) withColor:[UIColor whiteColor]];
     self.typeVc.delegate = self;
     [self.backView addSubview:self.typeVc];
     
@@ -95,6 +103,24 @@
     [self.view addSubview:self.scrollTopBtn];
 }
 
+
+/**
+ 重新加载数据
+ */
+-(void)reloadData
+{
+    self.pageNumber=1;
+    [self loadDataForTypeWithIndex:self.indext];
+}
+
+/**
+ 加载下一页数据
+ */
+-(void)loadNextPageData
+{
+    self.pageNumber ++;
+    [self loadDataForTypeWithIndex:self.indext];
+}
 /**
  滚动到顶部
  */
@@ -162,7 +188,7 @@
        }
 
    }
-    else if (self.indext == 2)
+    else if (self.indext == 2||self.indext==5)
     {
         ThirtyModel * model = self.dataArray[indexPath.item];
         ThrityViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"thirtyCell" forIndexPath:indexPath];
@@ -172,7 +198,36 @@
         cell.countLabel.text = [NSString stringWithFormat:@"%@",model.favorites];
         autocell = cell;
     }
+    else if (self.indext==1 ||self.indext ==3)
+    {
+        ThirtyModel * model = self.dataArray[indexPath.item];
+        SpecialViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"SpecialViewCell" forIndexPath:indexPath];
+        [cell.userImage sd_setImageWithURL:[NSURL URLWithString:model.headpic]];
+        cell.userNameLabel.text = model.nickname;
+        cell.imageArray = model.productImages;
+        cell.tagArray = model.productTags;
+        cell.typeNameLabel.text = [NSString stringWithFormat:@"%@  %@  %@",model.brand,model.category,model.size];
+        cell.clothDetailLabel.text = model.clothDetail;
+        cell.priceLabel.text = [NSString stringWithFormat:@"¥%@",model.currentPrice];
+        [cell.favoriteBtn setTitle:[NSString stringWithFormat:@"%@",model.favorites] forState:UIControlStateNormal];
+        [cell createImageView];
+        autocell = cell;
+        UIButton * previewBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, cell.imageBackView.frame.size.width, cell.imageBackView.frame.size.height)];
+        [previewBtn addTarget:self action:@selector(presentImageVc:) forControlEvents:UIControlEventTouchUpInside];
+        previewBtn.tag = indexPath.item;
+        [cell.imageBackView addSubview:previewBtn];
+        [cell creatTagBtn];
+       
+    }
     return autocell;
+}
+-(void)presentImageVc:(UIButton *)btn
+{
+    ThirtyModel * model = self.dataArray[btn.tag];
+    ImageViewController * imageVC = [[ImageViewController alloc]init];
+    imageVC.netimageArray = model.productImages;
+    [imageVC loadImageWithUrl:model.productImages[0] imageId:nil indexOfArray:nil];
+    [self presentViewController:imageVC animated:YES completion:nil];
 }
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -185,45 +240,29 @@
         }
         return CGSizeMake(ViewWidth, 370);
     }
-    else if(self.indext == 2)
+    else if(self.indext == 2 || self.indext==5)
     {
         return CGSizeMake((ViewWidth - 30)/2, (ViewWidth - 30)/2+60);
+    }
+    else if (self.indext ==1 || self.indext == 3)
+    {
+        ThirtyModel * model = self.dataArray[indexPath.item];
+        if(model.productTags.count>0)
+        {
+            return CGSizeMake(ViewWidth, 410);
+        }
+        return CGSizeMake(ViewWidth, 380);
     }
     return CGSizeMake(0, 0);
     
 }
-
-//kvo监测滑动的距离
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-    if(self.collectView.contentOffset.y >= 205)
-    {
-        [self.typeVc removeFromSuperview];
-        self.typeVc.frame = CGRectMake(0, 64, ViewWidth, 40);
-        [self.navigationController.view addSubview:self.typeVc];
-    }
-    else
-    {
-        [self.typeVc removeFromSuperview];
-        self.typeVc.frame = CGRectMake(0, 205, ViewWidth, 40);
-        [self.backView addSubview:self.typeVc];
-    }
-    if(self.collectView.contentOffset.y>=2*ViewHight)
-    {
-        self.scrollTopBtn.hidden = NO;
-    }
-    else
-    {
-        self.scrollTopBtn.hidden = YES;
-    }
-}
 -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
-    if(self.indext == 2)
+    if(self.indext == 2||self.indext==5)
     {
         return UIEdgeInsetsMake(10, 10, 10, 10);
     }
-    return UIEdgeInsetsMake(10, 0, 10, 0);
+    return UIEdgeInsetsMake(10, 3, 10, 3);
 }
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -237,10 +276,35 @@
             UINavigationController * navc = [[UINavigationController alloc]initWithRootViewController:webC];
             [self presentViewController:navc animated:NO completion:nil];
             
-
+            
         }
     }
 }
+//kvo监测滑动的距离
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if(self.collectView.contentOffset.y >= 255)
+    {
+        [self.typeVc removeFromSuperview];
+        self.typeVc.frame = CGRectMake(0, 64, ViewWidth, 40);
+        [self.navigationController.view addSubview:self.typeVc];
+    }
+    else
+    {
+        [self.typeVc removeFromSuperview];
+        self.typeVc.frame = CGRectMake(0, 255, ViewWidth, 40);
+        [self.backView addSubview:self.typeVc];
+    }
+    if(self.collectView.contentOffset.y>=2*ViewHight)
+    {
+        self.scrollTopBtn.hidden = NO;
+    }
+    else
+    {
+        self.scrollTopBtn.hidden = YES;
+    }
+}
+
 
 /**
  下载数据
@@ -250,7 +314,7 @@
     if(indext == 0)
     {
         [ContentModel loadDataWithPage:@(self.pageNumber) typeId:self.typeId viewWith:self.view arrayBlock:^(NSMutableArray *contentArray) {
-            if(self.dataArray.count >0)
+            if(self.dataArray.count >0&&self.pageNumber==1)
             {
                 [self.dataArray removeAllObjects];
             }
@@ -263,10 +327,10 @@
         }];
 
     }
-    else if (indext == 2)
+    else if (indext == 2||indext==5)
     {
         [ThirtyModel loadDataWithPage:@(self.pageNumber) typeId:self.typeId viewWith:self.view arrayBlock:^(NSMutableArray *contentArray) {
-            if(self.dataArray.count >0)
+            if(self.dataArray.count >0&&self.pageNumber==1)
             {
                 [self.dataArray removeAllObjects];
             }
@@ -278,12 +342,23 @@
             });
         }];
     }
-    else
+    else if (indext==1 || indext==3)
     {
-        [WNetRequest showMbProgressText:@"看看其他的..." WithTime:1 WithView:self.view];
+        [ThirtyModel loadSpecialDataWithPage:@(self.pageNumber) typeId:self.typeId viewWith:self.view arrayBlock:^(NSMutableArray *contentArray) {
+            if(self.dataArray.count >0&&self.pageNumber==1)
+            {
+                [self.dataArray removeAllObjects];
+            }
+            [self.dataArray addObjectsFromArray:contentArray];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.collectView reloadData];
+                
+            });
+        }];
     }
-    
-    
+    [self.collectView.mj_header endRefreshing];
+    [self.collectView.mj_footer endRefreshing];
 }
 
 
@@ -312,10 +387,10 @@
  */
 -(void)typeChangeContentUrl:(NSNumber *)typeId index:(NSInteger)selectIndex
 {
+    self.pageNumber = 1;
     self.typeId = typeId;
     self.indext = selectIndex;
     [self loadDataForTypeWithIndex:selectIndex];
-    
 }
 -(void)dealloc
 {

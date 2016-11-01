@@ -101,7 +101,7 @@
 -(void)configImageUI
 {
     self.userInteractionEnabled = YES;
-    _imageScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height - 50)];
+    _imageScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height - 75)];
     _imageScrollView.bouncesZoom = NO;
     _imageScrollView.showsHorizontalScrollIndicator = NO;
     _pageControl = [[UIPageControl alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(_imageScrollView.frame)-30, self.frame.size.width, 30)];
@@ -143,16 +143,23 @@
  */
 -(void)createLabelType
 {
-    _labelScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(self.imageScrollView.frame), self.frame.size.width, 50)];
+    _labelScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(self.imageScrollView.frame), self.frame.size.width, 75)];
     _labelScrollView.showsHorizontalScrollIndicator = NO;
     NSArray * nameArray = @[@"衣服",@"包包",@"母婴",@"美肤",@"美鞋",@"配饰"];
+    NSArray * imageArray = @[@"classify_icon_clothe",@"classify_icon_bag",@"classify_icon_mab",@"classify_icon_makeup",@"classify_icon_shose",@"classify_icon_Jewelry"];
     for(int i =0 ;i <nameArray.count;i ++)
     {
-        UIButton * labelBtn = [[UIButton alloc]initWithFrame:CGRectMake(i * 70, 0, 70, 45)];
+        UIButton * labelBtn = [[UIButton alloc]initWithFrame:CGRectMake(i * 70, 0, 70, 70)];
         [labelBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         [labelBtn setTitle:nameArray[i] forState:UIControlStateNormal];
+        [labelBtn setTitleEdgeInsets:UIEdgeInsetsMake(5, -45, 5, 5)];
         labelBtn.backgroundColor = [UIColor whiteColor];
         labelBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+        labelBtn.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
+        labelBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        [labelBtn setImage:[UIImage imageNamed:imageArray[i]] forState:UIControlStateNormal];
+        [labelBtn setImageEdgeInsets:UIEdgeInsetsMake(30, 15, 0, 15)];
+        
         [_labelScrollView addSubview:labelBtn];
     }
     _labelScrollView.contentSize = CGSizeMake(70* nameArray.count, 0);
@@ -289,30 +296,41 @@
     [self typeClickL:firstBtn];
 }
 
+/**
+ 点击不同类型
+ */
 -(void)typeClickL:(UIButton *)btn
 {
-    if(!self.lastBtn)
+   
+    if(btn.tag !=4)
     {
-        self.lastBtn = btn;
+        if(!self.lastBtn)
+        {
+            self.lastBtn = btn;
+        }
+        else
+        {
+            if(self.lastBtn != btn)
+            {
+                [self.lastBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                self.lastBtn = btn;
+            }
+        }
+        [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [UIView animateWithDuration:0.2 animations:^{
+            self.lineLabel.frame = CGRectMake(btn.frame.origin.x,self.frame.size.height - 3, btn.frame.size.width, 3);
+        }];
+        ImageModel * model = self.typeArray[btn.tag];
+        if(self.delegate && [self.delegate respondsToSelector:@selector(typeChangeContentUrl:index:)])
+        {
+            [self.delegate typeChangeContentUrl:model.showStyleID index:btn.tag];
+        }
     }
     else
     {
-        if(self.lastBtn != btn)
-        {
-            [self.lastBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-            self.lastBtn = btn;
-        }
+        [WNetRequest showMbProgressText:@"看看其他的..." WithTime:1 WithView:self.superview];
     }
-    [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [UIView animateWithDuration:0.2 animations:^{
-       self.lineLabel.frame = CGRectMake(btn.frame.origin.x,self.frame.size.height - 3, btn.frame.size.width, 3);
-    }];
-    ImageModel * model = self.typeArray[btn.tag];
-    if(self.delegate && [self.delegate respondsToSelector:@selector(typeChangeContentUrl:index:)])
-    {
-        [self.delegate typeChangeContentUrl:model.showStyleID index:btn.tag];
     }
-}
 -(void)dealloc
 {
     [self.scrollTime invalidate];
